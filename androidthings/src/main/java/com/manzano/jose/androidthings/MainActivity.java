@@ -47,10 +47,12 @@ public class MainActivity extends Activity {
     private final String PIN_LED = "BCM18";
     public Gpio mLedGpio;
     private Boolean ledStatus;
+    private WifiUtils wifiutils;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        wifiutils = new WifiUtils(this);
         ledStatus = false;
         PeripheralManager service = PeripheralManager.getInstance();
         try {
@@ -60,6 +62,12 @@ public class MainActivity extends Activity {
             Log.e(TAG, "Error en el API PeripheralIO", e);
         }
         startAdvertising();
+    }
+
+    public void doRemoteAction() {
+        wifiutils.connectToAP("SSID", "pass");
+        wifiutils.listNetworks();
+        wifiutils.getConnectionInfo();
     }
 
     private void startAdvertising() {
