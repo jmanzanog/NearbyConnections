@@ -69,6 +69,7 @@ public class WebServer extends NanoHTTPD {
         Map<String, List<String>> parms = session.getParameters();
         if (parms.get("on") != null) {
             listener.switchLEDon();
+
         } else if (parms.get("off") != null) {
             listener.switchLEDoff();
         }
@@ -79,17 +80,17 @@ public class WebServer extends NanoHTTPD {
             e.printStackTrace();
         }
         String postweb;
-       // if (listener.getLedStatus()) {
+        if (listener.getLedStatus()) {
             postweb = preweb.replaceAll("#keytext", "ENCENDIDO");
             postweb = postweb.replaceAll("#keycolor", "MediumSeaGreen");
             postweb = postweb.replaceAll("#colorA", "#F2994A");
             postweb = postweb.replaceAll("#colorB", "#F2C94C");
-       /* } else {
+        } else {
             postweb = preweb.replaceAll("#keytext", "APAGADO");
             postweb = postweb.replaceAll("#keycolor", "Tomato");
             postweb = postweb.replaceAll("#colorA", "#3e5151");
             postweb = postweb.replaceAll("#colorB", "#decba4");
-        }*/
+        }
         return newFixedLengthResponse(postweb);
     }
 }

@@ -176,18 +176,19 @@ public class MainActivity extends AppCompatActivity implements WebServer.Webserv
         Log.i(TAG, "Mensaje enviado.");
     }
 
+    Boolean status = true;
     @Override
     public Boolean getLedStatus() {
-        return null;
+        return status;
     }
 
     @Override
     public void switchLEDon() {
-
+        status = true;
     }
 
     @Override
     public void switchLEDoff() {
-
+        status = false;
     }
 }
