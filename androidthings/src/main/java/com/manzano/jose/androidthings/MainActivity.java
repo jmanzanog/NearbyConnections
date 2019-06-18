@@ -1,8 +1,8 @@
 package com.manzano.jose.androidthings;
 
-import android.support.annotation.NonNull;
-import android.support.v7.app.AppCompatActivity;
+import android.app.Activity;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.google.android.gms.nearby.Nearby;
@@ -41,8 +41,8 @@ import java.io.IOException;
  *
  * @see <a href="https://github.com/androidthings/contrib-drivers#readme">https://github.com/androidthings/contrib-drivers#readme</a>
  */
-public class MainActivity extends AppCompatActivity {
-    private static final String SERVICE_ID = "com.example.mipaquete";
+public class MainActivity extends Activity {
+    private static final String SERVICE_ID = "com.manzano.jose.androidthings";
     private static final String TAG = "Things:";
     private final String PIN_LED = "BCM18";
     public Gpio mLedGpio;
