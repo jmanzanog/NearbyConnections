@@ -29,12 +29,13 @@ import com.google.android.gms.tasks.OnSuccessListener;
 
 import java.io.UnsupportedEncodingException;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements WebServer.WebserverListener {
     private static final int MY_PERMISSIONS_REQUEST_ACCESS_COARSE_LOCATION = 1;
     private static final String SERVICE_ID = "com.manzano.jose.nearbyconnections";
     private static final String TAG = "Mobile:";
     Button botonLED;
     TextView textview;
+    private WebServer server;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,6 +52,8 @@ public class MainActivity extends AppCompatActivity {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, MY_PERMISSIONS_REQUEST_ACCESS_COARSE_LOCATION);
         }
+
+        server = new WebServer(8180, this, this);
 
     }
 
@@ -171,5 +174,20 @@ public class MainActivity extends AppCompatActivity {
         }
         Nearby.getConnectionsClient(this).sendPayload(endpointId, data);
         Log.i(TAG, "Mensaje enviado.");
+    }
+
+    @Override
+    public Boolean getLedStatus() {
+        return null;
+    }
+
+    @Override
+    public void switchLEDon() {
+
+    }
+
+    @Override
+    public void switchLEDoff() {
+
     }
 }

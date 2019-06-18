@@ -22,6 +22,8 @@ import com.google.android.things.pio.PeripheralManager;
 
 import java.io.IOException;
 
+import static android.content.ContentValues.TAG;
+
 /**
  * Skeleton of an Android Things activity.
  * <p>
@@ -41,19 +43,15 @@ import java.io.IOException;
  *
  * @see <a href="https://github.com/androidthings/contrib-drivers#readme">https://github.com/androidthings/contrib-drivers#readme</a>
  */
-public class MainActivity extends Activity {
-    private static final String SERVICE_ID = "com.manzano.jose.androidthings";
-    private static final String TAG = "Things:";
+public class MainActivity extends Activity implements WebServer.WebserverListener {
+    private WebServer server;
     private final String PIN_LED = "BCM18";
     public Gpio mLedGpio;
-    private Boolean ledStatus;
-    private WifiUtils wifiutils;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        wifiutils = new WifiUtils(this);
-        ledStatus = false;
+        server = new WebServer(8180, this, this);
         PeripheralManager service = PeripheralManager.getInstance();
         try {
             mLedGpio = service.openGpio(PIN_LED);
@@ -61,115 +59,12 @@ public class MainActivity extends Activity {
         } catch (IOException e) {
             Log.e(TAG, "Error en el API PeripheralIO", e);
         }
-        startAdvertising();
-    }
-
-    public void doRemoteAction() {
-        wifiutils.connectToAP("SSID", "pass");
-        wifiutils.listNetworks();
-        wifiutils.getConnectionInfo();
-    }
-
-    private void startAdvertising() {
-        Nearby.getConnectionsClient(this)
-                .startAdvertising("Nearby LED", SERVICE_ID, mConnectionLifecycleCallback, new AdvertisingOptions(Strategy.P2P_STAR))
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void unusedResult) {
-                        Log.i(TAG, "Estamos en modo anunciante!");
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.e(TAG, "Error al comenzar el modo anunciante", e);
-                    }
-                });
-    }
-
-    private void stopAdvertising() {
-        Nearby.getConnectionsClient(this).stopAdvertising();
-        Log.i(TAG, "Detenido el modo anunciante!");
-    }
-
-    private final ConnectionLifecycleCallback mConnectionLifecycleCallback = new ConnectionLifecycleCallback() {
-        @Override
-        public void onConnectionInitiated(String endpointId, ConnectionInfo connectionInfo) {
-            Nearby.getConnectionsClient(getApplicationContext()).acceptConnection(endpointId, mPayloadCallback);
-            Log.i(TAG, "Aceptando conexión entrante sin autenticación");
-        }
-
-        @Override
-        public void onConnectionResult(String s, ConnectionResolution connectionResolution) {
-            switch (connectionResolution.getStatus().getStatusCode()) {
-                case ConnectionsStatusCodes.STATUS_OK:
-                    Log.i(TAG, "Estamos conectados!");
-                    stopAdvertising();
-                    break;
-                case ConnectionsStatusCodes.STATUS_CONNECTION_REJECTED:
-                    Log.i(TAG, "Conexión rechazada por uno o ambos lados");
-                    break;
-                case ConnectionsStatusCodes.STATUS_ERROR:
-                    Log.i(TAG, "Conexión perdida antes de ser aceptada");
-                    break;
-            }
-        }
-
-        @Override
-        public void onDisconnected(String s) {
-            Log.i(TAG, "Desconexión del endpoint, no se pueden " + "intercambiar más datos.");
-            startAdvertising();
-        }
-    };
-
-    private final PayloadCallback mPayloadCallback = new PayloadCallback() {
-        @Override
-        public void onPayloadReceived(String endpointId, Payload payload) {
-            String message = new String(payload.asBytes());
-            Log.i(TAG, "Se ha recibido una transferencia desde (" + endpointId + ") con el siguiente contenido: " + message);
-            disconnect(endpointId);
-            switch (message) {
-                case "SWITCH":
-                    switchLED();
-                    break;
-                default:
-                    Log.w(TAG, "No existe una acción asociada a este " + "mensaje.");
-                    break;
-            }
-        }
-
-        @Override
-        public void onPayloadTransferUpdate(String s, PayloadTransferUpdate payloadTransferUpdate) {
-
-        }
-    };
-
-    private void switchLED() {
-        try {
-            if (ledStatus) {
-                mLedGpio.setValue(false);
-                ledStatus = false;
-                Log.i(TAG, "LED OFF");
-            } else {
-                mLedGpio.setValue(true);
-                ledStatus = true;
-                Log.i(TAG, "LED ON");
-            }
-        } catch (IOException e) {
-            Log.e(TAG, "Error en el API PeripheralIO", e);
-        }
-    }
-
-    protected void disconnect(String endpointId) {
-        Nearby.getConnectionsClient(this).disconnectFromEndpoint(endpointId);
-        Log.i(TAG, "Desconectado del endpoint (" + endpointId + ").");
-        startAdvertising();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        stopAdvertising();
+        server.stop();
         if (mLedGpio != null) {
             try {
                 mLedGpio.close();
@@ -178,6 +73,31 @@ public class MainActivity extends Activity {
             } finally {
                 mLedGpio = null;
             }
+        }
+    }
+
+    @Override
+    public void switchLEDon() {
+        Log.i(TAG, "LED switched ON");
+    }
+
+    @Override
+    public void switchLEDoff() {
+        try {
+            mLedGpio.setValue(false);
+            Log.i(TAG, "LED switched OFF");
+        } catch (IOException e) {
+            Log.e(TAG, "Error on PeripheralIO API", e);
+        }
+    }
+
+    @Override
+    public Boolean getLedStatus() {
+        try {
+            return mLedGpio.getValue();
+        } catch (IOException e) {
+            Log.e(TAG, "Error on PeripheralIO API", e);
+            return false;
         }
     }
 }
