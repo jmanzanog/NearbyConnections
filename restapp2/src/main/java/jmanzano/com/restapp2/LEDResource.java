@@ -29,6 +29,7 @@ public class LEDResource extends ServerResource {
         } catch (Exception e) {
             Log.e(TAG, "Error en JSONObject: ", e);
         }
+        getResponse().setAccessControlAllowOrigin("*");
         return new StringRepresentation(result.toString(), MediaType.APPLICATION_ALL_JSON);
     }
 
@@ -53,6 +54,7 @@ public class LEDResource extends ServerResource {
         } catch (JSONException e) {
             Log.e(TAG, "Error en JSONObject: ", e);
         }
+        getResponse().setAccessControlAllowOrigin("*");
         return new StringRepresentation(fullresult.toString(), MediaType.APPLICATION_ALL_JSON);
     }
 
