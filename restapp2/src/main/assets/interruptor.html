@@ -1,0 +1,16 @@
+<html>
+<head><title>Web de control remoto del LED</title>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js"
+            type="text/javascript" charset="utf-8"></script>
+    <script>
+         var android_things_ip = "192.168.1.113"; var android_things_port = "8080"; var url = "http://" + android_things_ip + ":" + android_things_port + "/rest/led"; var content_type = "application/json; charset=utf-8"; function switchOn(){ $.ajax({type: "POST", url: url, data: "{\"estado\": true}", contentType: content_type, dataType: "json"}); } function switchOff(){ $.ajax({type: "POST", url: url, data: "{\"estado\": false}", contentType: content_type, dataType: "json"}); } function getReading(){ $.ajax({type: "GET", url: url, success: callback}); } function callback(data, status){ alert(data); }
+    </script>
+</head>
+<body align="center"><h1>Control remoto de LED</h1>
+<input type="button" onClick="switchOn()"
+       value="ON"/>
+<input type="button"
+       onClick="switchOff()"
+       value="OFF"/><br><br>
+<input type="button" onClick="getReading()" value="Valor actual"/></body>
+</html>
