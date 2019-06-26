@@ -24,7 +24,7 @@ public class RESTfulService extends IntentService {
         Router router = new Router(mComponent.getContext().createChildContext());
         mComponent.getServers().add(Protocol.HTTP, 8080);
         mComponent.getDefaultHost().attach("/rest", router);
-        router.attach("/led", LEDResource.class);
+        router.attach("/ldr", LDRResource.class);
     }
 
     public static void startServer(Context context) {

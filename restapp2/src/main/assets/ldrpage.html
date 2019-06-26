@@ -1,0 +1,19 @@
+<html>
+<head><title>Web de visualización remota de iluminación</title>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"
+            type="text/javascript" charset="utf-8"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/raphael/2.1.0/raphael-min.js"
+            type="text/javascript" charset="utf-8"></script>
+    <script src="http://cdn.jsdelivr.net/justgage/1.0.1/justgage.min.js" type="text/javascript"
+            charset="utf-8"></script>
+    <script>
+         var android_things_ip = "192.168.1.113"; var android_things_port = "8080"; var url = "http://" + android_things_ip + ":" + android_things_port + "/rest/ldr"; function callback(data, status){ if (status == "success") { volts = parseFloat(data.result); volts = volts.toFixed(2); g.refresh(volts); setTimeout(getReading, 1000); } else { alert("Hubo un problema"); } } function getReading(){ $.get(url, {}, callback); }
+    </script>
+</head>
+<body>
+<div id="gauge" class="200x160px"></div>
+<script>
+     var g = new JustGage({ id: "gauge", value: 0, min: 0, max: 5, label: "Volts", title: "Light-o-meter" }); getReading();
+</script>
+</body>
+</html>

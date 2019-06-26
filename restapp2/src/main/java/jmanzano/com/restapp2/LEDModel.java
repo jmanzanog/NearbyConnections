@@ -3,7 +3,7 @@ package jmanzano.com.restapp2;
 public class LEDModel {
     private static LEDModel instance = null;
 
-    Boolean estado;
+    private Boolean estado;
 
     public static LEDModel getInstance() {
         if (instance == null) {
