@@ -1,0 +1,7 @@
+adb connect 158.42.146.127:13
+http://158.42.146.127:8080
+
+"C:\Program Files\Java\jdk1.8.0_181\bin\keytool.exe"
+
+
+347313480584-fknq1qu5hk8bg7m72sjal0n3liashu7d.apps.googleusercontent.com
